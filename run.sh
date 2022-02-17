@@ -1,12 +1,17 @@
+#!/bin/bash
+
+if [[ -z $1 ]]
+then
+  echo "You need to specify the name of the program to run"
+  exit 2
+fi
+
 if [[ -f config.txt ]]
 then 
    configfile=config.txt
 else 
    configfile=init.config.txt
 fi
-
-# name of the file to run
-file=code/main.do
 
 
 echo "================================"
@@ -18,7 +23,15 @@ source $configfile
 
 echo "================================"
 echo "Running docker:"
-set -ev
+set -v
+
+# name of the file to run
+file=$1
+datadir=V2/raw
+resultsdir=V2/results
+otherdir=V2/created
+
+
 
 # When we are on Github Actions
 if [[ $CI ]] 
@@ -32,8 +45,7 @@ else
 fi
 
 # ensure that the directories are writable by Docker
-chmod a+rwX code code/*
-chmod a+rwX data 
+[[ -d logs ]] || mkdir logs
 
 # a few names
 basefile=$(basename $file)
@@ -42,11 +54,16 @@ logfile=${file%*.do}.log
 
 # run the docker and the Stata file
 # note that the working directory will be set to '/code' by default
+read
 
 time docker run $DOCKEROPTS \
   -v ${STATALIC}:/usr/local/stata/stata.lic \
   -v $(pwd)/${codedir}:/code \
-  -v $(pwd)/data:/data \
+  -v $(pwd)/${datadir}:/raw \
+  -v $(pwd)/$resultsdir:/results \
+  -v $(pwd)/$otherdir:/created \
+  -v $(pwd)/logs:/logs \
+  -w /code \
   $DOCKERIMG:$TAG -b $basefile
 
 # print and check logfile
@@ -55,7 +72,7 @@ EXIT_CODE=0
 if [[ -f $logfile ]]
 then
    echo "===== $logfile ====="
-   cat $logfile
+   tail -20 $logfile
 
    # Fail CI if Stata ran with an error
    LOG_CODE=$(tail -1 $logfile | tr -d '[:cntrl:]')

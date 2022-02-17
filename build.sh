@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# for debugging
-BUILDARGS="--progress plain --no-cache"
+# reading configuration
 
 
 # if we are on Github Actions
@@ -13,6 +12,20 @@ else
    source init.config.txt
    DOCKERIMG=$MYHUBID/$MYIMG
 fi
+
+
+# for debugging
+BUILDARGS="--progress plain --no-cache"
+
+
+
+
+if [[ ! -f $STATALIC ]] 
+then
+  echo "You specified $STATALIC - that is not a file"
+	exit 2
+fi
+
 
 DOCKER_BUILDKIT=1 docker build \
   $BUILDARGS \
@@ -29,5 +42,8 @@ then
    do 
       echo ${name}=${!name} >> config.txt
    done
-fi  
+fi
+
+      
+      
    

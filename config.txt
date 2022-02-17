@@ -1,6 +1,6 @@
-# configuration created on 2022-02-16_21:36
+# configuration created on 2022-02-17_11:37
 VERSION=17
-TAG=2022-02-16
-MYHUBID=larsvilhuber
-MYIMG=projectname
-STATALIC=/home/user/Dropbox/licenses/stata.lic.17
+TAG=2022-02-17
+MYHUBID=aeadataeditor
+MYIMG=aearep-2656
+STATALIC=/home/vilhuber/Workspace/git/AEA/Verification/aearep-2656/151441/stata.lic
